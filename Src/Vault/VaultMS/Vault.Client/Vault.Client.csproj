@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{63CF5BCE-F32D-4574-A32D-8C4DC4E90A62}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Vault.Client</RootNamespace>
+    <AssemblyName>Vault.Client</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=4.6.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\..\_Packages\Autofac.4.6.2\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application\VaultClientEventSource.cs" />
+    <Compile Include="Client\GroupClient.cs" />
+    <Compile Include="Client\IVaultClient.cs" />
+    <Compile Include="Client\ManagementClient.cs" />
+    <Compile Include="Client\SecretClient.cs" />
+    <Compile Include="Client\VaultClient.cs" />
+    <Compile Include="Client\VaultClientAutoFacModule.cs" />
+    <Compile Include="Configuration\IVaultClientConfiguration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Khooversoft.Toolbox\Khooversoft.Net\Khooversoft.Net.csproj">
+      <Project>{4c580b5f-01b2-499f-b800-64ebaa878ac0}</Project>
+      <Name>Khooversoft.Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Khooversoft.Toolbox\Khooversoft.Security\Khooversoft.Security.csproj">
+      <Project>{b6b9a040-63da-4740-99dd-67877d77c9c8}</Project>
+      <Name>Khooversoft.Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Khooversoft.Toolbox\Khooversoft.Services\Khooversoft.Services.csproj">
+      <Project>{89cf141d-400b-4d2c-adc0-4442b46d8be4}</Project>
+      <Name>Khooversoft.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Khooversoft.Toolbox\Khooversoft.Toolbox\Khooversoft.Toolbox.csproj">
+      <Project>{7c91ae08-d47e-467b-92b1-8dd5c85ccd8d}</Project>
+      <Name>Khooversoft.Toolbox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Vault.Contract\Vault.Contract.csproj">
+      <Project>{c92e06e6-d1cf-4d95-8ff6-edb860a367bc}</Project>
+      <Name>Vault.Contract</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

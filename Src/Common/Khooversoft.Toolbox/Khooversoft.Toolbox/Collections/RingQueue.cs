@@ -17,9 +17,7 @@ namespace Khooversoft.Toolbox
     /// <typeparam name="T">Queue of T</typeparam>
     public class RingQueue<T> : IEnumerable<T>
     {
-        private int _read = 0;
-        private int _write = 0;
-        private T[] _objects;
+        private Queue<T> _queue;
         private readonly object _lock = new object();
 
         /// <summary>
@@ -37,30 +35,12 @@ namespace Khooversoft.Toolbox
         /// <summary>
         /// Is queue empty?
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                lock (_lock)
-                {
-                    return (_read == _write) && (Count == 0);
-                }
-            }
-        }
+        public bool IsEmpty { get { return _queue.Count == 0; } }
 
         /// <summary>
         /// Is queue full
         /// </summary>
-        public bool IsFull
-        {
-            get
-            {
-                lock (_lock)
-                {
-                    return (_read == _write) && (Count > 0);
-                }
-            }
-        }
+        public bool IsFull { get { return _queue.Count == Size; } }
 
         /// <summary>
         /// Number of records lost because of overwrite
@@ -70,7 +50,7 @@ namespace Khooversoft.Toolbox
         /// <summary>
         /// Current queue count
         /// </summary>
-        public int Count { get; private set; }
+        public int Count { get { return _queue.Count; } }
 
         /// <summary>
         /// Size of queue
@@ -85,9 +65,8 @@ namespace Khooversoft.Toolbox
         {
             lock (_lock)
             {
-                _read = 0;
-                _write = 0;
-                _objects = new T[Size + 1];
+                _queue = new Queue<T>(Size);
+                LostCount = 0;
             }
 
             return this;
@@ -103,15 +82,11 @@ namespace Khooversoft.Toolbox
             {
                 if (IsFull)
                 {
-                    Count--;
-                    _read = (_read + 1) % Size;
+                    _queue.Dequeue();
                     LostCount++;
                 }
 
-                _objects[_write] = item;
-
-                Count++;
-                _write = (_write + 1) % Size;
+                _queue.Enqueue(item);
             }
         }
 
@@ -125,33 +100,24 @@ namespace Khooversoft.Toolbox
             lock (_lock)
             {
                 Verify.Assert<IndexOutOfRangeException>(!IsEmpty, "Queue is empty");
-
-                T item = _objects[_read];
-                Count--;
-                _read = (_read + 1) % Size;
-
-                return item;
+                return _queue.Dequeue();
             }
         }
 
         /// <summary>
         /// Try to dequeue value
         /// </summary>
-        /// <param name="value">value returned</param>
-        /// <returns>true if value exists, false if queue is empty</returns>
-        public bool TryDequeue(out T value)
+        /// <returns>true if value returned, false if not</returns>
+        public (bool Success, T value) TryDequeue()
         {
-            value = default(T);
-
             lock (_lock)
             {
                 if (IsEmpty)
                 {
-                    return false;
+                    return (false, default(T));
                 }
 
-                value = Dequeue();
-                return true;
+                return (true, Dequeue());
             }
         }
 
@@ -160,19 +126,16 @@ namespace Khooversoft.Toolbox
         /// </summary>
         /// <param name="value">value returned</param>
         /// <returns>true if value exists, false if queue is empty</returns>
-        public bool TryPeek(out T value)
+        public (bool Success, T value) TryPeek()
         {
-            value = default(T);
-
             lock (_lock)
             {
                 if (IsEmpty)
                 {
-                    return false;
+                    return (false, default(T));
                 }
 
-                value = _objects[_read];
-                return true;
+                return (true, _queue.Peek());
             }
         }
 
@@ -182,18 +145,10 @@ namespace Khooversoft.Toolbox
         /// <returns>new IList(T)</returns>
         public IList<T> ToList()
         {
-            var list = new List<T>();
-
             lock (_lock)
             {
-                for (int i = 0; i < Count; i++)
-                {
-                    int index = (_read + i) % Size;
-                    list.Add(_objects[index]);
-                }
+                return new List<T>(_queue);
             }
-
-            return list;
         }
 
         /// <summary>

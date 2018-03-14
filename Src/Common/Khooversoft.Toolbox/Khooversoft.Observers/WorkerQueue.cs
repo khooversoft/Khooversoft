@@ -126,8 +126,8 @@ namespace Khooversoft.Observers
 
                     while (!_cancellationTokenSource.IsCancellationRequested || drain)
                     {
-                        T data;
-                        if (!_queue.TryDequeue(out data))
+                        (bool Success, T data) rtn = _queue.TryDequeue();
+                        if (!rtn.Success)
                         {
                             if (drain)
                             {
@@ -137,7 +137,7 @@ namespace Khooversoft.Observers
                             break;
                         }
 
-                        _subject.OnNext(data);
+                        _subject.OnNext(rtn.data);
                     }
                 }
             }

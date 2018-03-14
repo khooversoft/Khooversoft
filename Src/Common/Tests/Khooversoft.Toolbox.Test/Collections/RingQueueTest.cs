@@ -98,7 +98,7 @@ namespace Khooversoft.Toolbox.Test.Collections
         }
 
         [Fact]
-        public void RingQueuePerformanceTest()
+        public void RingQueueTryDequeueTest()
         {
             const int maxCount = 2000;
             const int size = 20;
@@ -118,11 +118,41 @@ namespace Khooversoft.Toolbox.Test.Collections
 
             for (int i = maxCount - size; i < maxCount; i++)
             {
-                int peekValue;
-                ring.TryPeek(out peekValue).Should().BeTrue();
+                (bool success, int value) rtn = ring.TryDequeue();
+
+                rtn.value.Should().Be(i);
+            }
+
+            ring.IsEmpty.Should().BeTrue();
+            ring.IsFull.Should().BeFalse();
+        }
+
+        [Fact]
+        public void RingQueueTryPeekTest()
+        {
+            const int maxCount = 2000;
+            const int size = 20;
+            var ring = new RingQueue<int>(size);
+
+            ring.IsEmpty.Should().BeTrue();
+            ring.IsFull.Should().BeFalse();
+
+            for (int i = 0; i < maxCount; i++)
+            {
+                ring.Enqueue(i);
+                ring.Count.Should().Be(Math.Min(size, i + 1));
+            }
+            ring.Count.Should().Be(size);
+            ring.IsFull.Should().BeTrue();
+            ring.LostCount.Should().Be(maxCount - size);
+
+            for (int i = maxCount - size; i < maxCount; i++)
+            {
+                (bool success, int peekValue) rtn = ring.TryPeek();
+                rtn.success.Should().BeTrue();
                 int value = ring.Dequeue();
 
-                value.Should().Be(peekValue);
+                value.Should().Be(rtn.peekValue);
                 value.Should().Be(i);
             }
 
